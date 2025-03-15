@@ -1,0 +1,6 @@
+@RatingCV_HostAddress = http://localhost:5296
+
+GET {{RatingCV_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

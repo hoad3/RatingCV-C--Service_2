@@ -1,0 +1,44 @@
+# Thư mục build và output
+bin/
+obj/
+out/
+
+# Các file môi trường nhạy cảm
+.env
+.env.local
+.env.*.local
+
+# Thư mục chứa user secrets (cấu hình nhạy cảm)
+secrets/
+secrets.json
+
+# Thư mục và file của Docker
+.docker/
+docker-compose.override.yml
+Dockerfile.*
+
+# Các file lock và tạm thời
+*.lock
+*.log
+*.bak
+*.swp
+*.swo
+
+# Cấu hình của IDE (VS Code, JetBrains Rider, Visual Studio)
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln.docstates
+*.user
+*.csproj.user
+
+# Các thư viện cài đặt qua NuGet (không cần push lên Git)
+packages/
+project.lock.json
+
+# Các file của hệ điều hành
+.DS_Store
+Thumbs.db
+desktop.ini

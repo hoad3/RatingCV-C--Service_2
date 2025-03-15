@@ -1,0 +1,6 @@
+﻿services:
+  ratingcv:
+    image: ratingcv
+    build:
+      context: .
+      dockerfile: RatingCV/Dockerfile
