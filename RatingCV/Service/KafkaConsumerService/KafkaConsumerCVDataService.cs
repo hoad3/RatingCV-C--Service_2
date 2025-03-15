@@ -17,7 +17,7 @@ namespace RatingCV.Service.KafkaConsumerService;
 public class KafkaConsumerCVDataService : BackgroundService
 {
     private readonly IKafkaConsumerService _kafkaConsumerService;
-    private readonly List<string> _topics = new() { "cv-data" }; // Danh sách topic
+    private readonly List<string> _topics = new() { "cv-data", "info-ungvien" };
 
     public KafkaConsumerCVDataService(IKafkaConsumerService kafkaConsumerService)
     {
@@ -26,8 +26,7 @@ public class KafkaConsumerCVDataService : BackgroundService
 
     protected override Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        var tasks = _topics.Select(topic => _kafkaConsumerService.StartConsumingAsync(topic, stoppingToken));
-        return Task.WhenAll(tasks);
+        return _kafkaConsumerService.StartConsumingAsync(_topics, stoppingToken);
     }
 }
 

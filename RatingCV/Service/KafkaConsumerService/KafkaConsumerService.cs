@@ -1,4 +1,8 @@
 ﻿using Confluent.Kafka;
+using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
+using RatingCV.Data;
+using RatingCV.Model.Thong_tin_chi_tiet_ungvien;
 
 namespace RatingCV.Service.KafkaConsumerService;
 
@@ -33,11 +37,11 @@ public class KafkaConsumerService : IKafkaConsumerService
         };
     }
 
-    public async Task StartConsumingAsync(string topic, CancellationToken cancellationToken)
+    public async Task StartConsumingAsync(List<string> topics, CancellationToken cancellationToken)
     {
         using var consumer = new ConsumerBuilder<Ignore, string>(_consumerConfig).Build();
-        consumer.Subscribe(topic);
-        _logger.LogInformation("✅ Kafka Consumer started, listening on topic: {Topic}", topic);
+        consumer.Subscribe(topics);
+        _logger.LogInformation("✅ Kafka Consumer started, listening on topics: {Topics}", string.Join(", ", topics));
 
         try
         {
@@ -52,27 +56,27 @@ public class KafkaConsumerService : IKafkaConsumerService
                         continue;
                     }
 
-                    _logger.LogInformation("📥 Received message from {Topic}: {Message}", topic, consumeResult.Value);
+                    _logger.LogInformation("📥 Received message from {Topic}: {Message}", consumeResult.Topic, consumeResult.Value);
 
                     // Gọi dịch vụ xử lý dữ liệu
-                    await _processingService.ProcessMessageAsync(consumeResult.Value, cancellationToken);
+                    await _processingService.ProcessMessageAsync(consumeResult.Topic, consumeResult.Value, cancellationToken);
 
                     consumer.Commit(consumeResult);
                 }
                 catch (ConsumeException ex)
                 {
-                    _logger.LogError("❌ Kafka consume error on {Topic}: {Error}", topic, ex.Message);
+                    _logger.LogError("❌ Kafka consume error on {Topic}: {Error}", topics, ex.Message);
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError("❌ Unexpected error in Kafka Consumer for {Topic}: {Error}", topic, ex.Message);
+                    _logger.LogError("❌ Unexpected error in Kafka Consumer for {Topic}: {Error}", topics, ex.Message);
                 }
             }
         }
         finally
         {
             consumer.Close();
-            _logger.LogInformation("🛑 Kafka Consumer stopped for topic: {Topic}", topic);
+            _logger.LogInformation("🛑 Kafka Consumer stopped for topics: {Topics}", string.Join(", ", topics));
         }
     }
 }

@@ -2,5 +2,6 @@
 
 public interface IKafkaProcessingService
 {
-    Task ProcessMessageAsync(string message, CancellationToken cancellationToken);
+    Task ProcessMessageAsync(string topic, string message, CancellationToken cancellationToken);
+    
 }

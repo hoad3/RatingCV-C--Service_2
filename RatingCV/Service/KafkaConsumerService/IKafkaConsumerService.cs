@@ -1,6 +1,9 @@
-﻿namespace RatingCV.Service.KafkaConsumerService;
+﻿using RatingCV.Data;
+
+namespace RatingCV.Service.KafkaConsumerService;
 
 public interface IKafkaConsumerService
 {
-    Task StartConsumingAsync(string topic, CancellationToken cancellationToken);
+    Task StartConsumingAsync(List<string> topics, CancellationToken cancellationToken);
+    
 }
