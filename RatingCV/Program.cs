@@ -7,6 +7,8 @@ using RatingCV.MinIO;
 using RatingCV.Service;
 using RatingCV.Service.FileService;
 using RatingCV.Service.KafkaConsumerService;
+using RatingCV.Service.Project;
+using RatingCV.Service.Ung_vien;
 using RatingCV.SSH;
 
 
@@ -48,8 +50,6 @@ string connectionString = $"Host=127.0.0.1;Port={sshTunnel.LocalPort};Database={
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(connectionString));
 
-
-
 // Đọc cấu hình MinIO từ biến môi trường
 var minioEndpoint = Environment.GetEnvironmentVariable("MINIO_ENDPOINT") ?? "";
 var minioAccessKey = Environment.GetEnvironmentVariable("MINIO_ACCESS_KEY") ?? "";
@@ -66,24 +66,26 @@ builder.Services.AddSingleton<IMinioClient>(sp =>
         .Build();
 });
 
-
-
+builder.Services.AddScoped<IProjects, Projects>();
+builder.Services.AddScoped<IUngvienService, UngvienService>();
 
 builder.Services.AddScoped<IMinIOService, MinIOService>();
+
+
+
 // Đăng ký Kafka Consumer là một BackgroundService
 builder.Services.AddHostedService<KafkaConsumerCVDataService>();
 builder.Services.AddSingleton<IKafkaConsumerService, KafkaConsumerService>();
 builder.Services.AddSingleton<IKafkaProcessingService, KafkaProcessingService>();
 builder.Services.AddHostedService<FileService>();
+builder.Services.AddHttpClient();
 // builder.Services.AddHostedService<FileService>();
-
-
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddMemoryCache();
-
+builder.Services.AddHttpClient();
 
 var app = builder.Build();
 
@@ -106,9 +108,6 @@ app.UseCors(options =>
     options.AllowAnyMethod();
     options.WithOrigins();
 });
-
-
-
 
 app.Run();
 

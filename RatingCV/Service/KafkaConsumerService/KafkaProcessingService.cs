@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using RatingCV.Data;
 using RatingCV.Model.cv_ungvien;
+using RatingCV.Model.du_an;
 using RatingCV.Model.Thong_tin_chi_tiet_ungvien;
 
 namespace RatingCV.Service.KafkaConsumerService;
@@ -71,6 +72,25 @@ public class KafkaProcessingService : IKafkaProcessingService
             await dbContext.SaveChangesAsync();
             _logger.LogInformation($"🔄 Cập nhật ungvienid {cvData.ungvienid} cho {pendingRecords.Count} bản ghi đang chờ.");
         }
+        
+        if (cvData.projects != null && cvData.projects.Count > 0)
+        {
+            var duAnList = cvData.projects.Select(p => new du_an()
+            {
+                userid = cvData.ungvienid, // Gán ungvienid từ cv_data
+                ten_du_an = p.ten_du_an,
+                mo_ta = p.mo_ta,
+                ngay_bat_dau = p.ngay_bat_dau,
+                ngay_ket_thuc = p.ngay_ket_thuc,
+                team_size = p.team_size,
+                role = p.role,
+                github = p.github
+            }).ToList();
+
+            dbContext.du_an.AddRange(duAnList);
+            await dbContext.SaveChangesAsync();
+            _logger.LogInformation($"✅ Lưu {duAnList.Count} dự án cho ứng viên ID: {cvData.ungvienid}");
+        }
     }
 
     private async Task HandleInfoUngvienAsync(string message, AppDbContext dbContext, CancellationToken cancellationToken)
@@ -113,4 +133,5 @@ public class KafkaProcessingService : IKafkaProcessingService
             _logger.LogError("❌ Lỗi xử lý info-ungvien: {Error}", ex.Message);
         }
     }
+    
 }

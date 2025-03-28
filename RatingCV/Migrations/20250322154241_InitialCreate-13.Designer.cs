@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using RatingCV.Data;
@@ -11,9 +12,11 @@ using RatingCV.Data;
 namespace RatingCV.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250322154241_InitialCreate-13")]
+    partial class InitialCreate13
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -174,28 +177,6 @@ namespace RatingCV.Migrations
                     b.ToTable("du_an", (string)null);
                 });
 
-            modelBuilder.Entity("RatingCV.Model.github.github", b =>
-                {
-                    b.Property<int>("id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("id"));
-
-                    b.Property<string>("github_link")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("userid")
-                        .HasColumnType("integer");
-
-                    b.HasKey("id");
-
-                    b.HasIndex("userid");
-
-                    b.ToTable("github", (string)null);
-                });
-
             modelBuilder.Entity("RatingCV.Model.Thong_tin_chi_tiet_ungvien.thong_tin_chi_tiet_ungvien", b =>
                 {
                     b.HasOne("RatingCV.Model.cv_ungvien.cv_ungvien", null)
@@ -206,15 +187,6 @@ namespace RatingCV.Migrations
                 });
 
             modelBuilder.Entity("RatingCV.Model.du_an.du_an", b =>
-                {
-                    b.HasOne("RatingCV.Model.cv_ungvien.cv_ungvien", null)
-                        .WithMany()
-                        .HasForeignKey("userid")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("RatingCV.Model.github.github", b =>
                 {
                     b.HasOne("RatingCV.Model.cv_ungvien.cv_ungvien", null)
                         .WithMany()

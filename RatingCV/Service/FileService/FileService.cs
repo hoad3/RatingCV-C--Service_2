@@ -15,7 +15,6 @@ public class FileService: BackgroundService
         _serviceScopeFactory = serviceScopeFactory;
         _logger = logger;
     }
-
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         var config = new ConsumerConfig
@@ -30,7 +29,7 @@ public class FileService: BackgroundService
 
         _logger.LogInformation("FileService is listening for messages on Kafka topic: cv-file");
 
-        try
+        await Task.Run(async () =>
         {
             while (!stoppingToken.IsCancellationRequested)
             {
@@ -47,7 +46,8 @@ public class FileService: BackgroundService
                         var minioService = scope.ServiceProvider.GetRequiredService<IMinIOService>();
 
                         // Giải mã Base64 và lưu lên MinIO
-                        string fileUrl = await DecodeAndUploadFileAsync(minioService, fileMessage.FileContent, fileMessage.FileName);
+                        string fileUrl = await DecodeAndUploadFileAsync(minioService, fileMessage.FileContent,
+                            fileMessage.FileName);
                         _logger.LogInformation($"File uploaded successfully: {fileUrl}");
                     }
                 }
@@ -56,11 +56,7 @@ public class FileService: BackgroundService
                     _logger.LogError($"Error processing file-data message: {ex.Message}");
                 }
             }
-        }
-        finally
-        {
-            consumer.Close();
-        }
+        }, stoppingToken);
     }
 
     public async Task<string> DecodeAndUploadFileAsync(IMinIOService minioService, string base64String, string originalFileName)
@@ -88,7 +84,8 @@ public class FileService: BackgroundService
             
             using var stream = new MemoryStream(fileBytes);
 
-            string fileUrl = await minioService.UploadFileAsync(originalFileName, stream, contentType);
+            // Upload to ratingcv bucket
+            string fileUrl = await minioService.UploadFileAsync("ratingcv", originalFileName, stream, contentType);
             _logger.LogInformation($"Uploaded file {originalFileName} to MinIO at {fileUrl}");
             return fileUrl;
         }

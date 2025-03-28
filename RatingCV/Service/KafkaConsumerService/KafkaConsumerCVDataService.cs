@@ -26,7 +26,7 @@ public class KafkaConsumerCVDataService : BackgroundService
 
     protected override Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        return _kafkaConsumerService.StartConsumingAsync(_topics, stoppingToken);
+        return Task.Run(() => _kafkaConsumerService.StartConsumingAsync(_topics, stoppingToken));
     }
 }
 

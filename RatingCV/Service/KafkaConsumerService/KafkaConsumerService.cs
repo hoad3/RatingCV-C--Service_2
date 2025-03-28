@@ -36,7 +36,6 @@ public class KafkaConsumerService : IKafkaConsumerService
             HeartbeatIntervalMs = 3000
         };
     }
-
     public async Task StartConsumingAsync(List<string> topics, CancellationToken cancellationToken)
     {
         using var consumer = new ConsumerBuilder<Ignore, string>(_consumerConfig).Build();

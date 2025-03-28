@@ -7,36 +7,33 @@ namespace RatingCV.MinIO;
 
 public class MinIOService:IMinIOService
 {
-     // private readonly IMinioClient _minioClient;
     private readonly IMinioClient _minioClient;
     private readonly AppDbContext _context;
     private static Dictionary<string, Timer> _fileTimers = new Dictionary<string, Timer>();
-    public string BucketName => "ratingcv";
 
     public MinIOService(IMinioClient minioClient, AppDbContext context)
     {
         _context = context;
         _minioClient = minioClient;
-        
-     
     }
 
-    // Phương thức upload file lên MinIO
-    public async Task<string> UploadFileAsync(string objectName, Stream data, string contentType)
+    private async Task EnsureBucketExistsAsync(string bucketName)
+    {
+        bool found = await _minioClient.BucketExistsAsync(new BucketExistsArgs().WithBucket(bucketName));
+        if (!found)
+        {
+            await _minioClient.MakeBucketAsync(new MakeBucketArgs().WithBucket(bucketName));
+        }
+    }
+
+    public async Task<string> UploadFileAsync(string bucketName, string objectName, Stream data, string contentType)
     {
         try
         {
-            // Kiểm tra xem bucket có tồn tại không
-            bool found = await _minioClient.BucketExistsAsync(new BucketExistsArgs().WithBucket(BucketName));
-            if (!found)
-            {
-                // Nếu bucket chưa tồn tại, tạo mới bucket
-                await _minioClient.MakeBucketAsync(new MakeBucketArgs().WithBucket(BucketName));
-            }
+            await EnsureBucketExistsAsync(bucketName);
 
-            // Upload file lên MinIO
             var res = await _minioClient.PutObjectAsync(new PutObjectArgs()
-                .WithBucket(BucketName)
+                .WithBucket(bucketName)
                 .WithObject(objectName)
                 .WithStreamData(data)
                 .WithObjectSize(data.Length)
@@ -50,21 +47,19 @@ public class MinIOService:IMinIOService
             throw;
         }
     }
-    
-    public async Task<bool> DeleteFileAsync(string objectName)
+
+    public async Task<bool> DeleteFileAsync(string bucketName, string objectName)
     {
         try
         {
-            // Kiểm tra xem file có tồn tại trong bucket không
-            var statObject= await _minioClient.StatObjectAsync(new StatObjectArgs()
-                .WithBucket(BucketName)
+            var statObject = await _minioClient.StatObjectAsync(new StatObjectArgs()
+                .WithBucket(bucketName)
                 .WithObject(objectName));
 
             if (statObject != null)
             {
-                // Thực hiện xóa file khỏi MinIO
                 await _minioClient.RemoveObjectAsync(new RemoveObjectArgs()
-                    .WithBucket(BucketName)
+                    .WithBucket(bucketName)
                     .WithObject(objectName));
 
                 Console.WriteLine($"File {objectName} đã bị xóa thành công.");
@@ -73,28 +68,23 @@ public class MinIOService:IMinIOService
         }
         catch (MinioException ex)
         {
-            // Xử lý các lỗi từ MinIO (như bucket không tồn tại hoặc object không tìm thấy)
             Console.WriteLine($"Lỗi trong quá trình xóa file: {ex.Message}");
             return false;
         }
         catch (Exception ex)
         {
-            // Xử lý các lỗi chung
             Console.WriteLine($"Lỗi không xác định: {ex.Message}");
             return false;
         }
 
         return false;
     }
-    
-    
-    // Phương thức lấy URL của file từ MinIO
-    public Task<string> GetFileUrl(string objectName)
+
+    public Task<string> GetFileUrl(string bucketName, string objectName)
     {
         return _minioClient.PresignedGetObjectAsync(new PresignedGetObjectArgs()
-            .WithBucket(BucketName)
+            .WithBucket(bucketName)
             .WithObject(objectName)
             .WithExpiry(60 * 60 * 6));
     }
-    
 }

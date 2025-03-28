@@ -27,4 +27,5 @@ public class thong_tin_chi_tiet_ungvien
     
     [JsonPropertyName("phone")]
     public string phone { get; set; }
+    
 }

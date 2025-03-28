@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using RatingCV.Data;
@@ -11,9 +12,11 @@ using RatingCV.Data;
 namespace RatingCV.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250321120644_InitialCreate-11")]
+    partial class InitialCreate11
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -116,11 +119,6 @@ namespace RatingCV.Migrations
                     b.ToTable("cv_ungvien", (string)null);
                 });
 
-            modelBuilder.Entity("RatingCV.Model.du_an.Project", b =>
-                {
-                    b.ToTable("Project");
-                });
-
             modelBuilder.Entity("RatingCV.Model.du_an.du_an", b =>
                 {
                     b.Property<int>("du_an_id")
@@ -154,9 +152,8 @@ namespace RatingCV.Migrations
                         .HasColumnType("text")
                         .HasAnnotation("Relational:JsonPropertyName", "role");
 
-                    b.Property<string>("team_size")
-                        .IsRequired()
-                        .HasColumnType("text")
+                    b.Property<int>("team_size")
+                        .HasColumnType("integer")
                         .HasAnnotation("Relational:JsonPropertyName", "team_size");
 
                     b.Property<string>("ten_du_an")
@@ -174,28 +171,6 @@ namespace RatingCV.Migrations
                     b.ToTable("du_an", (string)null);
                 });
 
-            modelBuilder.Entity("RatingCV.Model.github.github", b =>
-                {
-                    b.Property<int>("id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("id"));
-
-                    b.Property<string>("github_link")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("userid")
-                        .HasColumnType("integer");
-
-                    b.HasKey("id");
-
-                    b.HasIndex("userid");
-
-                    b.ToTable("github", (string)null);
-                });
-
             modelBuilder.Entity("RatingCV.Model.Thong_tin_chi_tiet_ungvien.thong_tin_chi_tiet_ungvien", b =>
                 {
                     b.HasOne("RatingCV.Model.cv_ungvien.cv_ungvien", null)
@@ -206,15 +181,6 @@ namespace RatingCV.Migrations
                 });
 
             modelBuilder.Entity("RatingCV.Model.du_an.du_an", b =>
-                {
-                    b.HasOne("RatingCV.Model.cv_ungvien.cv_ungvien", null)
-                        .WithMany()
-                        .HasForeignKey("userid")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("RatingCV.Model.github.github", b =>
                 {
                     b.HasOne("RatingCV.Model.cv_ungvien.cv_ungvien", null)
                         .WithMany()
