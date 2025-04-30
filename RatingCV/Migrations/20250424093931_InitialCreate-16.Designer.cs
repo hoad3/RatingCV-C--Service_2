@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using RatingCV.Data;
@@ -11,9 +12,11 @@ using RatingCV.Data;
 namespace RatingCV.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250424093931_InitialCreate-16")]
+    partial class InitialCreate16
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -128,42 +131,19 @@ namespace RatingCV.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("session_id")
-                        .HasColumnType("integer");
-
                     b.Property<string>("trang_thai")
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<int>("ungvien_id")
+                        .HasColumnType("integer");
+
                     b.HasKey("id");
 
+                    b.HasIndex("ungvien_id")
+                        .IsUnique();
+
                     b.ToTable("rating_cv", (string)null);
-                });
-
-            modelBuilder.Entity("RatingCV.Model.danh_gia_theo_tieu_chi", b =>
-                {
-                    b.Property<int>("id_danh_gia")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("id_danh_gia"));
-
-                    b.Property<int>("id_rating")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("id_session")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("id_ungvien")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("ten_file")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("id_danh_gia");
-
-                    b.ToTable("danh_gia_theo_tieu_chi", (string)null);
                 });
 
             modelBuilder.Entity("RatingCV.Model.du_an.Project", b =>
@@ -241,28 +221,20 @@ namespace RatingCV.Migrations
                     b.ToTable("github", (string)null);
                 });
 
-            modelBuilder.Entity("RatingCV.Model.session.session", b =>
-                {
-                    b.Property<int>("session_id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("session_id"));
-
-                    b.Property<string>("session_name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("session_id");
-
-                    b.ToTable("session", (string)null);
-                });
-
             modelBuilder.Entity("RatingCV.Model.Thong_tin_chi_tiet_ungvien.thong_tin_chi_tiet_ungvien", b =>
                 {
                     b.HasOne("RatingCV.Model.cv_ungvien.cv_ungvien", null)
                         .WithOne()
                         .HasForeignKey("RatingCV.Model.Thong_tin_chi_tiet_ungvien.thong_tin_chi_tiet_ungvien", "ungvienid")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("RatingCV.Model.cv_ungvien.rating_cv", b =>
+                {
+                    b.HasOne("RatingCV.Model.cv_ungvien.cv_ungvien", null)
+                        .WithOne()
+                        .HasForeignKey("RatingCV.Model.cv_ungvien.rating_cv", "ungvien_id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

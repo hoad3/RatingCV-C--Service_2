@@ -6,8 +6,11 @@ using RatingCV.Data;
 using RatingCV.MinIO;
 using RatingCV.Service;
 using RatingCV.Service.FileService;
+using RatingCV.Service.GithubService;
 using RatingCV.Service.KafkaConsumerService;
 using RatingCV.Service.Project;
+using RatingCV.Service.RatingCV;
+using RatingCV.Service.Session;
 using RatingCV.Service.Ung_vien;
 using RatingCV.SSH;
 
@@ -70,7 +73,9 @@ builder.Services.AddScoped<IProjects, Projects>();
 builder.Services.AddScoped<IUngvienService, UngvienService>();
 
 builder.Services.AddScoped<IMinIOService, MinIOService>();
-
+builder.Services.AddScoped<IGithubService, GithubService>();
+builder.Services.AddScoped<ISessionService, SessionService>();
+builder.Services.AddScoped<IRatingCVService, RatingCVService>();
 
 
 // Đăng ký Kafka Consumer là một BackgroundService
@@ -80,6 +85,9 @@ builder.Services.AddSingleton<IKafkaProcessingService, KafkaProcessingService>()
 builder.Services.AddHostedService<FileService>();
 builder.Services.AddHttpClient();
 // builder.Services.AddHostedService<FileService>();
+
+
+// builder.Services.AddHostedService<GithubBackgroundService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

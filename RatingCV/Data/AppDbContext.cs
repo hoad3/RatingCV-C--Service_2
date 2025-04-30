@@ -1,7 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using RatingCV.Model;
 using RatingCV.Model.cv_ungvien;
 using RatingCV.Model.du_an;
 using RatingCV.Model.github;
+using RatingCV.Model.session;
 using RatingCV.Model.Thong_tin_chi_tiet_ungvien;
 
 
@@ -16,7 +18,11 @@ public class AppDbContext:DbContext
     public DbSet<du_an> du_an { get; set; }
     
     public DbSet<github_link> github_link { get; set; }
+    public DbSet<rating_cv> rating_cv { get; set; }
     
+    public DbSet<session> session { get; set; }
+    
+    public DbSet<danh_gia_theo_tieu_chi> danh_gia_theo_tieu_chi { get; set; }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -68,10 +74,34 @@ public class AppDbContext:DbContext
             .HasKey(g => g.id);
         
         modelBuilder.Entity<cv_ungvien>()
-            .HasMany<github_link>()
-            .WithOne()
+            .HasMany(c => c.github_links)
+            .WithOne(g => g.cv_ungvien)
             .HasForeignKey(g => g.userid)
             .OnDelete(DeleteBehavior.Cascade);
-     
+        
+        modelBuilder.Entity<rating_cv>()
+            .ToTable("rating_cv")
+            .Property(r => r.id)
+            .ValueGeneratedOnAdd();
+        
+        modelBuilder.Entity<rating_cv>()
+            .ToTable("rating_cv")
+            .HasKey(r => r.id);
+        
+        modelBuilder.Entity<session>()
+            .ToTable("session")
+            .Property(s => s.session_id)
+            .ValueGeneratedOnAdd();
+        modelBuilder.Entity<session>()
+            .ToTable("session")
+            .HasKey(s => s.session_id);
+        
+        modelBuilder.Entity<danh_gia_theo_tieu_chi>()
+            .ToTable("danh_gia_theo_tieu_chi")
+            .HasKey(r => r.id_danh_gia);
+        modelBuilder.Entity<danh_gia_theo_tieu_chi>()
+            .ToTable("danh_gia_theo_tieu_chi")
+            .Property(d => d.id_danh_gia)
+            .ValueGeneratedOnAdd();
     }
 }

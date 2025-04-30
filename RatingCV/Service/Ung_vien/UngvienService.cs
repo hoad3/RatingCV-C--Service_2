@@ -8,6 +8,7 @@ using RatingCV.Model.Thong_tin_chi_tiet_ungvien;
 using System.Net.Http;
 using System.Text.RegularExpressions;
 using HtmlAgilityPack;
+using Microsoft.AspNetCore.Mvc;
 using Octokit;
 
 namespace RatingCV.Service.Ung_vien;
@@ -95,6 +96,32 @@ public class UngvienService: IUngvienService
             .ToListAsync();
 
         return matchungvien;
+    }
+
+    public async Task<rating_cv> AddRatingCV([FromBody] rating_cv_Dto ratingCvDto, Stream fileStream, string fileName, string contentType)
+    {
+        var existingRating = await _context.rating_cv
+            .FirstOrDefaultAsync(r => r.session_id == ratingCvDto.session_id);
+        
+        if (existingRating != null)
+        {
+            throw new InvalidOperationException($"Rating CV with session_id {ratingCvDto.session_id} already exists.");
+        }
+
+        var bucketName = "ratingcv"; 
+        var uploadedFileName = await _minio.UploadFileAsync(bucketName, fileName, fileStream, contentType);
+    
+        var ratingcv = new rating_cv()
+        {
+            session_id = ratingCvDto.session_id,
+            trang_thai = ratingCvDto.trang_thai,
+            file_json = uploadedFileName,
+        };
+    
+        _context.rating_cv.Add(ratingcv);
+        await _context.SaveChangesAsync();
+
+        return ratingcv;
     }
     
 }

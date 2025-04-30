@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using RatingCV.Data;
@@ -11,9 +12,11 @@ using RatingCV.Data;
 namespace RatingCV.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250331082115_InitialCreate-15")]
+    partial class InitialCreate15
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -116,56 +119,6 @@ namespace RatingCV.Migrations
                     b.ToTable("cv_ungvien", (string)null);
                 });
 
-            modelBuilder.Entity("RatingCV.Model.cv_ungvien.rating_cv", b =>
-                {
-                    b.Property<int>("id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("id"));
-
-                    b.Property<string>("file_json")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("session_id")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("trang_thai")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("id");
-
-                    b.ToTable("rating_cv", (string)null);
-                });
-
-            modelBuilder.Entity("RatingCV.Model.danh_gia_theo_tieu_chi", b =>
-                {
-                    b.Property<int>("id_danh_gia")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("id_danh_gia"));
-
-                    b.Property<int>("id_rating")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("id_session")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("id_ungvien")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("ten_file")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("id_danh_gia");
-
-                    b.ToTable("danh_gia_theo_tieu_chi", (string)null);
-                });
-
             modelBuilder.Entity("RatingCV.Model.du_an.Project", b =>
                 {
                     b.ToTable("Project");
@@ -239,23 +192,6 @@ namespace RatingCV.Migrations
                     b.HasIndex("userid");
 
                     b.ToTable("github", (string)null);
-                });
-
-            modelBuilder.Entity("RatingCV.Model.session.session", b =>
-                {
-                    b.Property<int>("session_id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("session_id"));
-
-                    b.Property<string>("session_name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("session_id");
-
-                    b.ToTable("session", (string)null);
                 });
 
             modelBuilder.Entity("RatingCV.Model.Thong_tin_chi_tiet_ungvien.thong_tin_chi_tiet_ungvien", b =>

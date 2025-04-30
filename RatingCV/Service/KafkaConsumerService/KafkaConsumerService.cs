@@ -57,7 +57,6 @@ public class KafkaConsumerService : IKafkaConsumerService
 
                     _logger.LogInformation("📥 Received message from {Topic}: {Message}", consumeResult.Topic, consumeResult.Value);
 
-                    // Gọi dịch vụ xử lý dữ liệu
                     await _processingService.ProcessMessageAsync(consumeResult.Topic, consumeResult.Value, cancellationToken);
 
                     consumer.Commit(consumeResult);

@@ -27,6 +27,7 @@ Dockerfile.*
 # Cấu hình của IDE (VS Code, JetBrains Rider, Visual Studio)
 .vscode/
 .idea/
+.idea
 *.suo
 *.ntvs*
 *.njsproj

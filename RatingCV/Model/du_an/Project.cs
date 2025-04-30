@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace RatingCV.Model.du_an;
@@ -23,13 +24,32 @@ public class Project
 
     [NotMapped]
     [JsonPropertyName("team_size")]
+    [JsonConverter(typeof(TeamSizeConverter))]
     public string team_size { get; set; }
 
     [NotMapped]
     [JsonPropertyName("role")]
     public string role { get; set; }
+    
+}
 
-    [NotMapped]
-    [JsonPropertyName("github")]
-    public string github { get; set; }
+public class TeamSizeConverter : JsonConverter<string>
+{
+    public override string Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        switch (reader.TokenType)
+        {
+            case JsonTokenType.Number:
+                return reader.GetInt32().ToString();
+            case JsonTokenType.String:
+                return reader.GetString();
+            default:
+                return "1"; // Default value if neither number nor string
+        }
+    }
+
+    public override void Write(Utf8JsonWriter writer, string value, JsonSerializerOptions options)
+    {
+        writer.WriteStringValue(value);
+    }
 }

@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using RatingCV.Service.GithubService;
 using RatingCV.Service.Project;
 
 namespace RatingCV.Controller.Projects;
@@ -6,9 +7,11 @@ namespace RatingCV.Controller.Projects;
 public class ProjectController: ControllerBase
 {
     private readonly IProjects _projects;
+    private readonly IGithubService _githubService;
 
-    public ProjectController(IProjects projects)
+    public ProjectController(IProjects projects, IGithubService githubService)
     {
+        _githubService = githubService;
         _projects = projects;
     }
 
@@ -24,6 +27,20 @@ public class ProjectController: ControllerBase
         }
         
         return Ok(projects);
+    }
+
+    [HttpGet]
+    [Route("github_link/{userid}")]
+    public async Task<IActionResult> getGithubLink(int userid)
+    {
+        var githubs = await _githubService.getGithubLinks(userid);
+
+        if (githubs == null)
+        {
+            return NotFound();
+        }
+        
+        return Ok(githubs);
     }
     
 }

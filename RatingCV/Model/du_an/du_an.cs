@@ -26,8 +26,4 @@ public class du_an
     
     [JsonPropertyName("role")]
     public string role { get; set; }
-    
-    [JsonPropertyName("github")]
-    public string github { get; set; }
-    
 }

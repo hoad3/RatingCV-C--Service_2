@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 using RatingCV.Model.du_an;
+using RatingCV.Model.github;
 
 namespace RatingCV.Model.cv_ungvien;
 
@@ -30,5 +31,5 @@ public class cv_ungvien
     [JsonPropertyName("projects")]
     public List<Project>? projects { get; set; }
     
-
+    public ICollection<github_link> github_links { get; set; }
 }
